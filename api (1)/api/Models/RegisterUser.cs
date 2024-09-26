@@ -14,7 +14,5 @@ public class RegisterUser
     public required string Celphone { get; set; }
     public required string Address { get; set; }
 
-    // Relacionamento com User
     public int UserId { get; set; }
-    // public User? User { get; set; }
 }};

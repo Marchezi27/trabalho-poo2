@@ -23,24 +23,28 @@ public class UserController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] User user)
     {
-        // Hash da senha (é importante implementar uma hash segura)
-        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+        
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
 
-        // Não retorna a senha
         return Ok(new { user.Id, user.UserName });
     }
 
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDTO User)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.UserName);
-        
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserName == User.UserName );
+        var password = await _context.Users.FirstOrDefaultAsync(u => u.Password == User.Password );
 
-        // Gerar o token JWT
-        var token = GenerateJwtToken(user);
-        return Ok(new { user.Id, user.UserName, Token = token });
+        if (user == null){
+            return NotFound("usuário não encontrado");
+        } else if(password == null){
+            return NotFound("usuário não encontrado");
+        } else {
+            var token = GenerateJwtToken(user);
+            return Ok(new { user.Id, user.UserName, Token = token});
+        }
+        
     }
 
     [HttpGet("{id}")]
@@ -55,7 +59,7 @@ public class UserController : ControllerBase
             return NotFound();
 
         var token = GenerateJwtToken(user);
-        // Não retorna a senha
+        
         return Ok(new { user.Id, user.UserName, Token = token });
     }
 
@@ -71,7 +75,7 @@ public class UserController : ControllerBase
             new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.UserName)
         }),
-        Expires = DateTime.UtcNow.AddHours(1), // Defina o tempo de expiração do token
+        Expires = DateTime.UtcNow.AddHours(1),
         SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
         Issuer = "yourIssuer",
         Audience = "yourAudience"

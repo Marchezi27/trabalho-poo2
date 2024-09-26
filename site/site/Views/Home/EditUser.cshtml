@@ -27,12 +27,27 @@
         <label for="address">Endereço:</label>
         <input type="text" id="address" required />
     </div>
-    <button type="submit">Salvar</button>
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+        <button type="submit">Salvar</button>
+        <button type="button" id="cancelar">Cancelar</button>
+        <button type="button" id="resetar">Resetar</button>
+    </div>
 </form>
 
 <script>
 
     const id = window.location.pathname.split("/")[3]
+
+    document.getElementById("cancelar").addEventListener("click", function(event){
+        window.location.href = "/Home/Data"
+    })
+    document.getElementById("resetar").addEventListener("click", function(event){
+        const name = document.getElementById("name").value = "";
+        const email = document.getElementById("email").value = "";
+        const cpf = document.getElementById("cpf").value = "";
+        const celphone = document.getElementById("celphone").value = "";
+        const address = document.getElementById("address").value = "";
+    })
 
     async function fetchUserData() {
         

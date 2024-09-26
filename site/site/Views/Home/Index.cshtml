@@ -37,6 +37,7 @@
         .then(data => {
             
             alert(`Olá ${data.userName}`);
+            sessionStorage.setItem('id', data.id);
             
             window.location.href="/Home/Data"
 

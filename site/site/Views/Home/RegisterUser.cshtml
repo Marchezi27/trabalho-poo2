@@ -6,7 +6,7 @@
 
 <form id="registerUserForm">
     <div>
-        <label for="name">Name</label>
+        <label for="name">Nome</label>
         <input type="text" id="name" name="name" required />
         <span id="nameError" class="error" style="color:red"></span>
     </div>
@@ -16,44 +16,49 @@
         <span id="emailError" class="error" style="color:red"></span>
     </div>
     <div>
-        <label for="cpf">Cpf</label>
+        <label for="cpf">CPF</label>
         <input type="text" id="cpf" name="cpf" required pattern="\d{11}" title="O CPF deve ter 11 dígitos numéricos" />
         <span id="cpfError" class="error" style="color:red"></span>
     </div>
     <div>
-        <label for="celphone">Celphone</label>
+        <label for="celphone">Telefone</label>
         <input type="tel" id="celphone" name="celphone" required pattern="\d{11}" title="O Celular deve ter 11 dígitos numéricos" />
         <span id="celphoneError" class="error" style="color:red"></span>
     </div>
     <div>
-        <label for="address">Address</label>
+        <label for="address">Endereço</label>
         <input type="text" id="address" name="address" required />
         <span id="addressError" class="error" style="color:red"></span>
     </div>
-    <div>
-        <label for="userId">UserId</label>
-        <input type="number" id="userId" name="userId" required />
-        <span id="userIdError" class="error" style="color:red"></span>
-    </div>
-    <div>
-        <button type="submit">Register</button>
+
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+        <button type="submit">Registrar</button>
+        <button type="button" id="cancelar">Cancelar</button>
+        <button type="button" id="resetar">Resetar</button>
     </div>
 </form>
 
 <script>
+    document.getElementById("cancelar").addEventListener("click", function(event){
+        window.location.href = "/Home/Data"
+    })
+    document.getElementById("resetar").addEventListener("click", function(event){
+        const name = document.getElementById("name").value = "";
+        const email = document.getElementById("email").value = "";
+        const cpf = document.getElementById("cpf").value = "";
+        const celphone = document.getElementById("celphone").value = "";
+        const address = document.getElementById("address").value = "";
+    })
     document.getElementById("registerUserForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
-        // Limpar mensagens de erro
         document.querySelectorAll('.error').forEach(el => el.textContent = '');
 
-        // Validação manual adicional se necessário
         const name = document.getElementById("name").value;
         const email = document.getElementById("email").value;
         const cpf = document.getElementById("cpf").value;
         const celphone = document.getElementById("celphone").value;
         const address = document.getElementById("address").value;
-        const userId = document.getElementById("userId").value;
 
         let hasError = false;
 
@@ -77,13 +82,10 @@
             document.getElementById("addressError").textContent = "Address is required.";
             hasError = true;
         }
-        if (userId.trim() === "") {
-            document.getElementById("userIdError").textContent = "UserId is required.";
-            hasError = true;
-        }
+
+        const id = sessionStorage.getItem("id")
 
         if (!hasError) {
-            // Se não houver erro, enviar os dados para o servidor
             const userData = {
                 id: 0,
                 name: name,
@@ -91,7 +93,7 @@
                 cpf: cpf,
                 celphone: celphone,
                 address: address,
-                userId: parseInt(userId)
+                userId: parseInt(id)
             };
 
             fetch("http://localhost:5177/api/RegisterUser", {
@@ -103,12 +105,8 @@
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert("User registered successfully!");
-                    // Redirecionar ou limpar o formulário
-                } else {
-                    alert("Registration failed: " + data.message);
-                }
+                alert("Cliente criado");
+                window.location.href = "/Home/Data"
             })
             .catch(error => {
                 alert("Error: " + error);

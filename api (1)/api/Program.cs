@@ -7,7 +7,6 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configura o contexto com PostgreSQL
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -28,17 +27,16 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = "yourIssuer",
         ValidAudience = "yourAudience",
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yourSecretKey")) // Use uma chave secreta forte
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("yourSecretKey"))
     };
 });
 
-// Adiciona serviços de CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("http://localhost:5177", "http://localhost:5098") // Adicione aqui as origens permitidas
+            policy.WithOrigins("http://localhost:5177", "http://localhost:5098")
                   .AllowAnyHeader()
                   .AllowAnyMethod();
         });
@@ -50,7 +48,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "API JWT", Version = "v1" });
     
-    // Configuração para suporte a Bearer Token
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -77,22 +74,20 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Adiciona os controladores
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configura o pipeline de solicitação HTTP
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI(); // Certifique-se de que o Swagger UI está configurado corretamente
+    app.UseSwaggerUI();
 }
 
-app.UseAuthentication(); // Adiciona o middleware de autenticação
-app.UseAuthorization();  // Adiciona o middleware de autorização
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseCors("AllowSpecificOrigins");
 app.UseHttpsRedirection();
-app.MapControllers(); // Certifique-se de que os controladores estão mapeados
+app.MapControllers();
 
 app.Run();

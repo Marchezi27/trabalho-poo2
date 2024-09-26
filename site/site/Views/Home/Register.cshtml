@@ -25,16 +25,13 @@
     document.getElementById("registerForm").addEventListener("submit", function(event) {
         event.preventDefault();
 
-        // Limpar mensagens de erro
         document.querySelectorAll('.error').forEach(el => el.textContent = '');
 
-        // Obter os valores dos campos
         const userName = document.getElementById("userName").value;
         const password = document.getElementById("password").value;
 
         let hasError = false;
 
-        // Validação manual adicional
         if (userName.trim() === "") {
             document.getElementById("userNameError").textContent = "UserName is required.";
             hasError = true;
@@ -44,7 +41,6 @@
             hasError = true;
         }
 
-        // Se não houver erro, enviar os dados para o servidor
         if (!hasError) {
             const userData = {
                 userName: userName,
@@ -63,14 +59,11 @@
                 alert("Usuário registrado");
                 window.location.href = "/"
             })
-            .catch(error => {
-                alert("Error: " + error);
-            });
         }
     });
 
     
     document.getElementById("loginButton").addEventListener("click", function (event) {
-        window.location.href = "/"; // Altere a URL para a sua página de login, se necessário
+        window.location.href = "/";
     });
 </script>
