@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = "Editar Usuário";
+}
+
+<h2>Editar Usuário</h2>
+
+<form id="editUserForm">
+    @* <input type="hidden" id="userId" value="@userId" /> *@
+    
+    <div>
+        <label for="name">Nome:</label>
+        <input type="text" id="name" required />
+    </div>
+    <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required />
+    </div>
+    <div>
+        <label for="cpf">Cpf:</label>
+        <input type="text" id="cpf" required />
+    </div>
+    <div>
+        <label for="celphone">Celular:</label>
+        <input type="text" id="celphone" required />
+    </div>
+    <div>
+        <label for="address">Endereço:</label>
+        <input type="text" id="address" required />
+    </div>
+    <button type="submit">Salvar</button>
+</form>
+
+<script>
+
+    const id = window.location.pathname.split("/")[3]
+
+    async function fetchUserData() {
+        
+        const response = await fetch(`http://localhost:5177/api/RegisterUser/${id}`);
+        const user = await response.json();
+
+        // Preencher o formulário com os dados do usuário
+        document.getElementById("name").value = user.name;
+        document.getElementById("email").value = user.email;
+        document.getElementById("cpf").value = user.cpf;
+        document.getElementById("celphone").value = user.celphone;
+        document.getElementById("address").value = user.address;
+    }
+
+
+    async function updateUser(event) {
+        event.preventDefault(); 
+        const userData = {
+            name: document.getElementById("name").value,
+            email: document.getElementById("email").value,
+            cpf: document.getElementById("cpf").value,
+            celphone: document.getElementById("celphone").value,
+            address: document.getElementById("address").value
+        };
+
+        const response = await fetch(`http://localhost:5177/api/RegisterUser/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userData)
+        });
+
+        if (response.ok) {
+            alert("Usuário atualizado com sucesso!");
+            window.location.href = "/Home/Data";
+        } else {
+            alert("Erro ao atualizar usuário.");
+        }
+    }
+
+
+    document.getElementById("editUserForm").addEventListener("submit", updateUser);
+
+    window.onload = fetchUserData;
+</script>

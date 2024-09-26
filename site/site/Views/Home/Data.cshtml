@@ -1,0 +1,122 @@
+@{
+    ViewData["Title"] = "Data";
+}
+
+<div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="display: flex; justify-content: space-between;">
+        <h2>Lista de Usuários</h2>
+        <button id="registerButton">Registrar</button>
+    </div>
+
+    <table id="dataGridView" border="1" style="width: 100%">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Cpf</th>
+                <th>Celphone</th>
+                <th>Address</th>
+                <th>UserId</th>
+                <th>Ações</th> <!-- Nova coluna para ações -->
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
+
+<script>
+    // Função que faz o GET e popula o DataGridView
+    async function fetchData() {
+        try {
+            // Requisição GET para a URL local (modifique o endpoint conforme necessário)
+            const response = await fetch("http://localhost:5177/api/RegisterUser");
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            // Parse do JSON
+            const data = await response.json();
+
+            // Populando o DataGridView
+            const tbody = document.querySelector("#dataGridView tbody");
+            data.forEach(item => {
+                const row = document.createElement("tr");
+
+                // Criar células para cada propriedade
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name}</td>
+                    <td>${item.email}</td>
+                    <td>${item.cpf}</td>
+                    <td>${item.celphone}</td>
+                    <td>${item.address}</td>
+                    <td>${item.userId}</td>
+                    <td>
+                        <button class="editButton" data-id="${item.id}">Editar</button>
+                        <button class="deleteButton" data-id="${item.id}">Deletar</button>
+                    </td>
+                `;
+
+                // Adicionar a linha na tabela
+                tbody.appendChild(row);
+            });
+
+            // Adiciona eventos aos botões de editar e deletar após a tabela ser preenchida
+            addEventListeners();
+        } catch (error) {
+            console.error("Erro ao buscar dados:", error);
+        }
+    }
+
+    // Função para adicionar event listeners aos botões
+    function addEventListeners() {
+        const editButtons = document.querySelectorAll(".editButton");
+        const deleteButtons = document.querySelectorAll(".deleteButton");
+
+        editButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const id = this.getAttribute("data-id");
+                // Redirecionar para a página de edição com o ID
+                window.location.href = `/Home/EditUser/${id}`;
+            });
+        });
+
+        deleteButtons.forEach(button => {
+            button.addEventListener("click", function() {
+                const id = this.getAttribute("data-id");
+                // Confirmação antes de deletar
+                if (confirm("Tem certeza que deseja deletar este usuário?")) {
+                    deleteUser(id);
+                }
+            });
+        });
+    }
+
+    // Função para deletar o usuário
+    async function deleteUser(id) {
+        try {
+            const response = await fetch(`http://localhost:5177/api/RegisterUser/${id}`, {
+                method: "DELETE"
+            });
+
+            if (response.ok) {
+                alert("Usuário deletado com sucesso!");
+                fetchData(); // Recarrega a tabela após a exclusão
+            } else {
+                alert("Erro ao deletar usuário.");
+            }
+        } catch (error) {
+            console.error("Erro ao deletar usuário:", error);
+        }
+    }
+
+    // Chama a função para carregar os dados ao carregar a página
+    window.onload = fetchData;
+
+    const registerButton = document.getElementById("registerButton");
+    registerButton.addEventListener("click", () => {
+        window.location.href = "/Home/RegisterUser";
+    });
+</script>

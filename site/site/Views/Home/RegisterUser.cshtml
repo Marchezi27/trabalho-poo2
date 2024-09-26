@@ -1,0 +1,118 @@
+@{
+    ViewData["Title"] = "RegisterUser";
+}
+
+<h2>Register User</h2>
+
+<form id="registerUserForm">
+    <div>
+        <label for="name">Name</label>
+        <input type="text" id="name" name="name" required />
+        <span id="nameError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required />
+        <span id="emailError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <label for="cpf">Cpf</label>
+        <input type="text" id="cpf" name="cpf" required pattern="\d{11}" title="O CPF deve ter 11 dígitos numéricos" />
+        <span id="cpfError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <label for="celphone">Celphone</label>
+        <input type="tel" id="celphone" name="celphone" required pattern="\d{11}" title="O Celular deve ter 11 dígitos numéricos" />
+        <span id="celphoneError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <label for="address">Address</label>
+        <input type="text" id="address" name="address" required />
+        <span id="addressError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <label for="userId">UserId</label>
+        <input type="number" id="userId" name="userId" required />
+        <span id="userIdError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <button type="submit">Register</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById("registerUserForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        // Limpar mensagens de erro
+        document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+        // Validação manual adicional se necessário
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const cpf = document.getElementById("cpf").value;
+        const celphone = document.getElementById("celphone").value;
+        const address = document.getElementById("address").value;
+        const userId = document.getElementById("userId").value;
+
+        let hasError = false;
+
+        if (name.trim() === "") {
+            document.getElementById("nameError").textContent = "Name is required.";
+            hasError = true;
+        }
+        if (email.trim() === "") {
+            document.getElementById("emailError").textContent = "Email is required.";
+            hasError = true;
+        }
+        if (cpf.trim() === "" || !/^\d{11}$/.test(cpf)) {
+            document.getElementById("cpfError").textContent = "CPF must have 11 digits.";
+            hasError = true;
+        }
+        if (celphone.trim() === "" || !/^\d{11}$/.test(celphone)) {
+            document.getElementById("celphoneError").textContent = "Celphone must have 11 digits.";
+            hasError = true;
+        }
+        if (address.trim() === "") {
+            document.getElementById("addressError").textContent = "Address is required.";
+            hasError = true;
+        }
+        if (userId.trim() === "") {
+            document.getElementById("userIdError").textContent = "UserId is required.";
+            hasError = true;
+        }
+
+        if (!hasError) {
+            // Se não houver erro, enviar os dados para o servidor
+            const userData = {
+                id: 0,
+                name: name,
+                email: email,
+                cpf: cpf,
+                celphone: celphone,
+                address: address,
+                userId: parseInt(userId)
+            };
+
+            fetch("http://localhost:5177/api/RegisterUser", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("User registered successfully!");
+                    // Redirecionar ou limpar o formulário
+                } else {
+                    alert("Registration failed: " + data.message);
+                }
+            })
+            .catch(error => {
+                alert("Error: " + error);
+            });
+        }
+    });
+</script>

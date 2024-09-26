@@ -1,0 +1,76 @@
+@{
+    ViewData["Title"] = "Register";
+}
+
+<h2>Register</h2>
+
+<form id="registerForm">
+    <div>
+        <label for="userName">UserName</label>
+        <input type="text" id="userName" name="userName" required />
+        <span id="userNameError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required />
+        <span id="passwordError" class="error" style="color:red"></span>
+    </div>
+    <div>
+        <button type="submit">Register</button>
+        <button type="button" id="loginButton">Login</button>
+    </div>
+</form>
+
+<script>
+    document.getElementById("registerForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        // Limpar mensagens de erro
+        document.querySelectorAll('.error').forEach(el => el.textContent = '');
+
+        // Obter os valores dos campos
+        const userName = document.getElementById("userName").value;
+        const password = document.getElementById("password").value;
+
+        let hasError = false;
+
+        // Validação manual adicional
+        if (userName.trim() === "") {
+            document.getElementById("userNameError").textContent = "UserName is required.";
+            hasError = true;
+        }
+        if (password.trim() === "") {
+            document.getElementById("passwordError").textContent = "Password is required.";
+            hasError = true;
+        }
+
+        // Se não houver erro, enviar os dados para o servidor
+        if (!hasError) {
+            const userData = {
+                userName: userName,
+                password: password
+            };
+
+            fetch("http://localhost:5177/api/User/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(userData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Usuário registrado");
+                window.location.href = "/"
+            })
+            .catch(error => {
+                alert("Error: " + error);
+            });
+        }
+    });
+
+    
+    document.getElementById("loginButton").addEventListener("click", function (event) {
+        window.location.href = "/"; // Altere a URL para a sua página de login, se necessário
+    });
+</script>
